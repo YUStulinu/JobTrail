@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>JobTrail — job applications, tracked and tailored</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700;800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="wordmark" href="#" aria-label="JobTrail home">Job<span>Trail</span></a>
+
+      <nav class="views" aria-label="Main">
+        <button class="view-btn is-active" data-view="board">Board</button>
+        <button class="view-btn" data-view="cvs">CVs &amp; backup</button>
+      </nav>
+
+      <div class="topbar-actions">
+        <input type="search" id="searchInput" class="search" placeholder="Search company, role, notes" aria-label="Search jobs" />
+        <button id="addJobBtn" class="btn btn-primary">Add job</button>
+      </div>
+    </div>
+  </header>
+
+  <div id="aiBanner" class="banner" hidden>
+    AI features are off. Add <code>ANTHROPIC_API_KEY</code> to your <code>.env</code> file and restart the server — the board works without it.
+  </div>
+
+  <main>
+    <!-- ================= BOARD ================= -->
+    <section id="view-board" class="view is-active">
+      <p id="statsLine" class="stats-line"></p>
+      <div id="board" class="board" aria-label="Applications board"></div>
+    </section>
+
+    <!-- ================= CVs & BACKUP ================= -->
+    <section id="view-cvs" class="view">
+      <div class="cvs-layout">
+        <div class="cvs-main">
+          <h1 class="page-title">Your CVs</h1>
+          <p class="page-intro">Keep one CV per direction you apply for — say, a frontend version and a full-stack version — and pick the right one for each job. The text shown here is what an ATS reads from your file.</p>
+
+          <form id="cvUploadForm" class="upload-card">
+            <label class="field">
+              <span>Name this version</span>
+              <input type="text" id="cvLabel" placeholder="e.g. Frontend CV (EN)" maxlength="80" />
+            </label>
+            <label class="dropzone" id="cvDropzone">
+              <input type="file" id="cvFile" accept=".pdf,.docx,.txt" hidden />
+              <strong id="cvDropTitle">Choose a CV file</strong>
+              <span>PDF, DOCX or TXT, up to 10 MB</span>
+            </label>
+            <button type="submit" class="btn btn-primary" id="cvUploadBtn">Upload CV</button>
+          </form>
+
+          <div id="cvList" class="cv-list"></div>
+        </div>
+
+        <aside class="backup-card">
+          <h2>Backup</h2>
+          <p>Everything is stored in <code>data/db.json</code> on this computer. Download a backup now and then — it includes your jobs, CVs and letters.</p>
+          <a class="btn btn-quiet" href="/api/export" download>Download backup</a>
+          <label class="btn btn-quiet file-btn">
+            Restore from backup
+            <input type="file" id="importFile" accept=".json,application/json" hidden />
+          </label>
+          <p class="fine">Restoring merges the backup into your current data; entries with the same ID are replaced.</p>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <!-- ================= ADD JOB DIALOG ================= -->
+  <dialog id="addDialog" class="modal" aria-labelledby="addTitle">
+    <form method="dialog" id="addForm" class="modal-body">
+      <div class="modal-head">
+        <h2 id="addTitle">Add a job</h2>
+        <button type="button" class="icon-btn" data-close aria-label="Close">×</button>
+      </div>
+
+      <label class="field">
+        <span>Job ad</span>
+        <textarea id="addDescription" rows="8" placeholder="Paste the full job ad here — title, requirements, everything. The match analysis and cover letter are built from this text."></textarea>
+      </label>
+      <div class="inline-actions">
+        <button type="button" id="autofillBtn" class="btn btn-quiet">Fill in details from the ad</button>
+        <span id="autofillStatus" class="muted"></span>
+      </div>
+
+      <div class="grid-2">
+        <label class="field"><span>Company</span><input type="text" id="addCompany" /></label>
+        <label class="field"><span>Role</span><input type="text" id="addRole" /></label>
+        <label class="field"><span>Location</span><input type="text" id="addLocation" /></label>
+        <label class="field"><span>Work mode</span>
+          <select id="addWorkMode">
+            <option value="">Not specified</option>
+            <option value="remote">Remote</option>
+            <option value="hybrid">Hybrid</option>
+            <option value="onsite">On-site</option>
+          </select>
+        </label>
+        <label class="field"><span>Salary</span><input type="text" id="addSalary" /></label>
+        <label class="field"><span>Link to the ad</span><input type="url" id="addLink" placeholder="https://" /></label>
+      </div>
+
+      <label class="field">
+        <span>Column</span>
+        <select id="addStatus">
+          <option value="saved">Saved — haven't applied yet</option>
+          <option value="applied">Applied — already sent</option>
+        </select>
+      </label>
+
+      <p id="addError" class="error" hidden></p>
+      <div class="modal-foot">
+        <button type="button" class="btn btn-quiet" data-close>Cancel</button>
+        <button type="submit" class="btn btn-primary" id="addSubmit">Add to board</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- ================= JOB DRAWER ================= -->
+  <dialog id="drawer" class="drawer" aria-labelledby="drawerRole">
+    <div class="drawer-head">
+      <div class="drawer-titles">
+        <p id="drawerCompany" class="drawer-company"></p>
+        <h2 id="drawerRole" class="drawer-role"></h2>
+      </div>
+      <div class="drawer-head-actions">
+        <select id="drawerStatus" class="status-select" aria-label="Move to column"></select>
+        <button type="button" class="icon-btn" id="drawerClose" aria-label="Close">×</button>
+      </div>
+    </div>
+
+    <div class="drawer-tabs" role="tablist">
+      <button class="tab is-active" data-tab="details" role="tab">Details</button>
+      <button class="tab" data-tab="match" role="tab">Match analysis</button>
+      <button class="tab" data-tab="letter" role="tab">Cover letter</button>
+    </div>
+
+    <div class="drawer-body">
+      <div class="tab-panel is-active" id="panel-details"></div>
+      <div class="tab-panel" id="panel-match"></div>
+      <div class="tab-panel" id="panel-letter"></div>
+    </div>
+  </dialog>
+
+  <!-- ================= CV TEXT DIALOG ================= -->
+  <dialog id="textDialog" class="modal modal-wide" aria-labelledby="textTitle">
+    <div class="modal-body">
+      <div class="modal-head">
+        <h2 id="textTitle">Text read from your CV</h2>
+        <button type="button" class="icon-btn" data-close aria-label="Close">×</button>
+      </div>
+      <p class="muted">This is what the analysis works from. If something came out garbled — columns mixed together, a missing section — fix it here. Your original file isn't changed.</p>
+      <textarea id="cvTextArea" class="cv-text" rows="22" spellcheck="false"></textarea>
+      <div class="modal-foot">
+        <button type="button" class="btn btn-quiet" data-close>Cancel</button>
+        <button type="button" class="btn btn-primary" id="cvTextSave">Save text</button>
+      </div>
+    </div>
+  </dialog>
+
+  <div id="toasts" class="toasts" popover="manual" aria-live="polite"></div>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
