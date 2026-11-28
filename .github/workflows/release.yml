@@ -43,11 +43,11 @@ jobs:
         run: |
           cp -r "pkg/$NAME" "$RUNNER_TEMP/$NAME" && cd "$RUNNER_TEMP/$NAME"
           q() { node -e "let s='';process.stdin.on('data',d=>s+=d).on('end',()=>{const d=JSON.parse(s);process.stdout.write(String($1))})"; }
-          [ "$(node bin/jobtrail.js cv samples/cv-alex-morgan.pdf | q 'd.sections.length+\",\"+d.warnings.length')" = "3,0" ]
+          [ "$(node bin/jobtrail.js cv samples/cv-alex-morgan.pdf | q 'd.sections.length+","+d.warnings.length')" = "3,0" ]
           node bin/jobtrail.js match --cv samples/cv-alex-morgan.pdf --analysis samples/analysis.json --job samples/job-frontend.txt > m.json
           [ "$(q 'd.score' < m.json)" = 61 ]
           [ "$(q 'd.checks.changes.length' < m.json)" = 3 ]
-          [ "$(node bin/jobtrail.js letter --cv samples/cv-alex-morgan.pdf --letter samples/letter.txt --analysis samples/analysis.json | q 'd.numbersNotInCv.join()+\"|\"+d.skillsNotInCv.length')" = "5|2" ]
+          [ "$(node bin/jobtrail.js letter --cv samples/cv-alex-morgan.pdf --letter samples/letter.txt --analysis samples/analysis.json | q 'd.numbersNotInCv.join()+"|"+d.skillsNotInCv.length')" = "5|2" ]
           echo "PDF read, claims checked, letter flagged"
       - name: Pack
         run: |
