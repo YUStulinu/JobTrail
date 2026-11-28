@@ -1,6 +1,6 @@
 {
   "name": "jobtrail",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Job application tracker with a Kanban board, CV-to-job match analysis (ATS-style keyword gaps), and tailored cover letters, powered by Claude.",
   "main": "server.js",
   "type": "commonjs",

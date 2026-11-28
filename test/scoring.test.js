@@ -32,6 +32,13 @@ test('accepts real quotes from the CV and rejects invented ones', () => {
   assert.equal(snippetAppearsIn(cv, 'Led a team of 12 engineers at Google'), false);
 });
 
+test('a quote with a changed number is not a quote', () => {
+  const cv = normalize('3 years of experience with React and Redux in production.');
+  assert.equal(snippetAppearsIn(cv, '3 years of experience with React and Redux'), true);
+  assert.equal(snippetAppearsIn(cv, '5 years of experience with React and Redux'), false, 'same words, invented number');
+  assert.equal(snippetAppearsIn(cv, 'experience with React, Redux in production 3 years'), true, 'reordered, same number');
+});
+
 test('flags numbers that do not appear in the CV', () => {
   const cv = 'Dashboard used by 40 teams, cut time by 30%. English (C1). 2022–2024.';
   assert.deepEqual(numbersNotIn('4+ years; 40 teams; 30% faster', cv), ['4']);

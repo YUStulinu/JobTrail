@@ -1,0 +1,25 @@
+{
+ "requirements": [
+  {"name": "4+ years of professional experience", "category": "qualification", "importance": "required", "status": "match", "evidence": "4 years of experience building web applications in React"},
+  {"name": "React", "category": "hard_skill", "importance": "required", "status": "match", "evidence": "Built a React and TypeScript dashboard used by 40 internal teams"},
+  {"name": "TypeScript", "category": "hard_skill", "importance": "required", "status": "match", "evidence": "React and TypeScript"},
+  {"name": "Next.js", "category": "tool", "importance": "required", "status": "match", "evidence": "Built server-rendered pages with Next.js"},
+  {"name": "Jest", "category": "tool", "importance": "required", "status": "match", "evidence": "Wrote unit tests with Jest"},
+  {"name": "Cypress", "category": "tool", "importance": "required", "status": "missing", "evidence": ""},
+  {"name": "REST APIs", "category": "hard_skill", "importance": "required", "status": "missing", "evidence": ""},
+  {"name": "GraphQL", "category": "hard_skill", "importance": "required", "status": "missing", "evidence": ""},
+  {"name": "Accessibility (WCAG)", "category": "hard_skill", "importance": "required", "status": "partial", "evidence": "build an accessible component library", "aliases": ["accessible", "WCAG"]},
+  {"name": "Git", "category": "tool", "importance": "required", "status": "match", "evidence": "Git"},
+  {"name": "fintech or payments", "category": "domain", "importance": "preferred", "status": "missing", "evidence": ""},
+  {"name": "PostgreSQL", "category": "tool", "importance": "preferred", "status": "partial", "evidence": "MySQL"},
+  {"name": "Mentoring junior developers", "category": "soft_skill", "importance": "preferred", "status": "missing", "evidence": ""}
+ ],
+ "strengths": ["React and TypeScript in production, on a dashboard used by 40 teams", "Measurable performance work: page load cut by 35%"],
+ "gaps": [{"requirement": "4+ years of professional experience", "advice": "The CV shows 3 years; lead with the scope of the work rather than the years."}],
+ "bulletSuggestions": [
+  {"original": "Built a React and TypeScript dashboard used by 40 internal teams.", "improved": "Built a React/TypeScript dashboard used daily by 40 internal teams.", "reason": "Puts the job's stack first."},
+  {"original": "Led the migration of the payments page to Next.js.", "improved": "Led the Next.js migration of the payments page.", "reason": "Fintech keyword."}
+ ],
+ "tailoredSummary": "Frontend developer with 3 years of React and TypeScript, focused on fast, tested, accessible interfaces.",
+ "atsTips": ["Next.js appears in the ad but nowhere in the CV."]
+}

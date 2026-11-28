@@ -24,7 +24,7 @@ A job application tracker for people actually job hunting. Track every applicati
 
 AI models sometimes claim things that aren't there. For a tool that shapes your job applications, that's not acceptable, so the AI's output is checked by code before you see it:
 
-- **Every "you have this" claim is verified.** The AI must quote your CV as evidence. If neither the skill nor the quote can be found in your CV text, the requirement is downgraded and flagged — you're never told you have a skill you haven't written down.
+- **Every "you have this" claim is verified.** The AI must quote your CV as evidence. If neither the skill nor the quote can be found in your CV text, the requirement is downgraded and flagged — you're never told you have a skill you haven't written down. A quote counts only if every number in it is in your CV: "5 years of React" doesn't pass for "3 years of React".
 - **Misses are corrected too.** If the AI says a keyword is missing but it's literally in your CV, it's marked as covered.
 - **The score is computed by a fixed formula**, not written by the AI: required items weigh 3×, nice-to-haves 1×, partial coverage counts half. Same CV + same ad → same number.
 - **Invented numbers are flagged.** Any figure in the tailored summary or cover letter that doesn't appear in your CV (or your notes) is highlighted for you to check.
@@ -32,6 +32,39 @@ AI models sometimes claim things that aren't there. For a tool that shapes your 
 - Matching handles Romanian diacritics (experiență = experienta) and technical names (C++, C#, .NET, Node.js, CI/CD), and won't mistake "Java" for "JavaScript".
 
 The score estimates keyword coverage. Real ATS systems and recruiters each weigh things their own way — use it to spot gaps, not as a verdict.
+
+## From an AI agent, without an API key
+
+An AI agent (Claude Code, Codex, Cursor and others) can compare a CV with a job ad and write a
+cover letter itself. What it cannot guarantee is that it didn't overstate something. `jobtrail`
+runs the app's checks on the agent's work, with no API key and nothing sent anywhere.
+
+```bash
+node bin/jobtrail.js cv my-cv.pdf                    # what an ATS reads from the file, and what trips it up
+node bin/jobtrail.js schema                          # the analysis format the agent fills in
+node bin/jobtrail.js match --cv my-cv.pdf --analysis analysis.json --job ad.txt
+node bin/jobtrail.js letter --cv my-cv.pdf --letter letter.txt --notes notes.txt --analysis analysis.json
+```
+
+- **`match`** applies the checks above to the agent's analysis:
+  - a claim whose quote is not in the CV is downgraded;
+  - a "missing" keyword that is in the CV becomes a match;
+  - a rewrite of a line that is not there is dropped;
+  - the score comes from the fixed formula.
+
+  It also lists, under `checks`, every change it made, and any requirement not worded as in the
+  ad, since ATS software matches the ad's literal keywords.
+- **`letter`** flags every number in a cover letter that is not in the CV or the candidate's notes.
+  Given the analysis, it also flags every requirement the letter names that the CV does not
+  show.
+
+A quoted line counts as evidence only if every number in it is in the CV: "5 years of React" is
+not a quote of "3 years of React", however many words match.
+
+The [releases](https://github.com/YUStulinu/JobTrail/releases) hold `jobtrail` with its
+dependencies for Linux, Windows and macOS, so it needs only Node.js 18+. [samples/](samples/) has a
+worked example. The skill that teaches an agent to use it is on
+[Agensi](https://agensi.io/skills/cv-match-and-cover-letter-with-checked-claims).
 
 ## Setup
 
@@ -87,6 +120,7 @@ jobtrail/
 │   ├── scoring.js       # verifies the AI's claims and computes the score
 │   ├── text.js          # diacritics-aware matching, evidence and number checks
 │   ├── parse.js         # PDF / DOCX / TXT extraction and ATS file checks
+│   ├── check.js         # the command line's match and cover-letter checks
 │   └── store.js         # JSON storage with atomic, serialized writes
 ├── public/
 │   ├── index.html
@@ -99,8 +133,13 @@ jobtrail/
 │       ├── state.js     # client-side state with subscriptions
 │       ├── api.js       # REST client
 │       └── util.js      # helpers
+├── bin/
+│   └── jobtrail.js      # the checks on the command line, for AI agents
+├── samples/             # a CV, a job ad, an agent's analysis and a cover letter, with mistakes
 ├── test/
-│   └── scoring.test.js  # tests for matching and scoring
+│   ├── scoring.test.js  # tests for matching and scoring
+│   ├── check.test.js    # tests for the command line's checks, on the samples
+│   └── parse-store.test.js
 ├── .env.example
 └── package.json
 ```
@@ -113,7 +152,9 @@ No front-end framework or build step: plain ES modules, native HTML5 drag and dr
 npm test
 ```
 
-Covers term matching (punctuation, word boundaries, diacritics), evidence verification, number checks, the AI-correction rules and the scoring formula.
+Covers term matching (punctuation, word boundaries, diacritics), evidence verification (a quote with a changed number is rejected), number checks, the AI-correction rules, the scoring formula, and the command line's checks on the samples, including reading the PDF CV.
+
+The release ([.github/workflows/release.yml](.github/workflows/release.yml)) packs `jobtrail` with its dependencies for Linux, Windows and macOS. It then checks each unpacked archive on the samples, outside the repository.
 
 ## Limits
 
@@ -122,13 +163,6 @@ Covers term matching (punctuation, word boundaries, diacritics), evidence verifi
 - Old `.doc` files aren't supported; save as `.docx` or PDF.
 - Job links are stored, not fetched: job sites block automated reading, so paste the ad's text.
 
-## Pushing to GitHub
+## License
 
-```bash
-git init
-git add .
-git commit -m "JobTrail: job application tracker with CV match analysis"
-git branch -M main
-git remote add origin <your_repo_url>
-git push -u origin main
-```
+MIT ([LICENSE](LICENSE)).

@@ -1,0 +1,17 @@
+Senior Frontend Engineer - Fintech, London (hybrid)
+
+You will build the web app our customers use to manage their money.
+
+Requirements
+- 4+ years of professional experience as a frontend developer
+- Strong React and TypeScript
+- Experience with Next.js
+- Testing with Jest or Cypress
+- Experience with REST APIs and GraphQL
+- Accessibility (WCAG)
+- Git and code review
+
+Nice to have
+- Experience in fintech or payments
+- PostgreSQL
+- Mentoring junior developers

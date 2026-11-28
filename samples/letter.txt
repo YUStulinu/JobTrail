@@ -1,0 +1,9 @@
+Dear Hiring Team,
+
+Over the last 5 years I have built web applications in React and TypeScript. At Brightline Analytics I built a dashboard used by 40 internal teams and cut its page load time by 35%.
+
+I have shipped production apps with Next.js and GraphQL, and I write tests with Jest.
+
+I would welcome the chance to talk about how I could help your team.
+
+Alex Morgan

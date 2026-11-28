@@ -1,0 +1,28 @@
+Alex Morgan
+Frontend Developer
+alex.morgan@example.com | +44 7700 900123 | linkedin.com/in/alexmorgan-example
+
+Summary
+Frontend developer with 3 years of experience building web applications in React and TypeScript.
+
+Work Experience
+Frontend Developer, Brightline Analytics, London (2023 - present)
+- Built a React and TypeScript dashboard used by 40 internal teams.
+- Cut page load time by 35% by splitting bundles and lazy-loading charts.
+- Wrote unit tests with Jest and React Testing Library; coverage went from 20% to 75%.
+- Worked with designers in Figma to build an accessible component library.
+
+Junior Web Developer, Northgate Retail, Manchester (2022 - 2023)
+- Maintained the online shop in JavaScript, HTML and CSS.
+- Moved product pages from jQuery to React.
+
+Projects
+- Budget Buddy: a personal budgeting web app in React and TypeScript with charts and CSV import, used by about 300 people.
+- Open-source contributions to a date-picker component: keyboard navigation and screen-reader labels.
+
+Education
+BSc Computer Science, University of Leeds, 2022
+
+Skills
+React, TypeScript, JavaScript, HTML, CSS, Jest, React Testing Library, Git, REST APIs, Figma, MySQL
+Languages: English (native), Spanish (B2)
